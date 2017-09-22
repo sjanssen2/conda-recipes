@@ -1,0 +1,105 @@
+--- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
++++ run-sepp.sh.stefan	2017-09-22 11:21:44.349715875 -0700
+@@ -1,13 +1,40 @@
+ #!/bin/bash  
+ 
+ if [ $# -lt 2 ]; then
+-   echo USAGE: $0 "[input fragments file] [output prefix] [optional: -x number-of-cores ] [optional: -A alignment subset size] [optional: -P placement subset size] [optional: any other SEPP argument]
+-   Optional commands need not be in order. Any SEPP option can also be passed. For example, use
+-   -x 8
+-   to make SEPP us 8 threads"
++	echo "This is SEPP for GreenGenes 13.8
++USAGE: $0 [input fragments file] [output prefix] <options>
++
++input fragments file:
++  a fasta file (one line per sequence) of the fragments to be
++  inserted into the reference phylogeny.
++output prefix:
++  an arbitrary name that identifies this run.
++	
++Optional arguments:
++  -x
++    Number of CPU cores to be used.
++  -A
++    Alignment subset size.
++  -P
++    Placement subset size.
++  -t
++    Filename for the reference pyholgeny in Newick format.
++    Default is GreenGenes 13.8.
++  -a
++    Filename for the reference alignment.
++    Should be in sync with the reference phylogeny in PyNAST format.
++    Default is GreenGenes 13.8.
++Optional commands need not be in order. Any SEPP option can also
++be passed. For example, use '-x 8' to make SEPP us 8 threads.
++"
+    exit 1;
+ fi
+ 
++if [[ `uname -o` != *"linux"* ]]; then
++	echo "INFO: SEPP uses a lot of memory when merging found placements into a tree. 
++Consider running SEPP in a grid environment instead of your local laptop!"
++fi;
++
+ tmpbase=`mktemp -d -t 'tmp.XXXXXXXXXX'`
+ if [ $? -ne 0 ]; 
+ then
+@@ -68,6 +95,14 @@
+ 			p="$2"
+ 			shift # past argument
+ 			;;
++		-t|--referenceTree)
++			t="$2"
++			shift # past argument
++			;;
++		-a|--referenceAlignment)
++			alg="$2"
++			shift # past argument
++			;;
+ 		*)
+ 			opts="$opts"" ""$key"" ""$2"
+ 			shift # past argument
+@@ -79,16 +114,20 @@
+ 
+ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+ 
+-# Reference tree
+-t="$DIR/ref/reference-gg-raxml-bl-rooted-relabelled.tre"
+-# Reference alignment
+-alg="$DIR/ref/gg_13_5_ssu_align_99_pfiltered.fasta"
++if [ -z $t ]; then
++	# resort to the default reference tree, if not specified via command line argument
++	t="/opt/anaconda1anaconda2anaconda3/share/seppgg/reference-gg-raxml-bl-rooted-relabelled.tre"
++fi;
++if [ -z $alg ]; then
++	# resort to the default reference alignment, if not specified via command line argument
++	alg="/opt/anaconda1anaconda2anaconda3/share/seppgg/gg_13_5_ssu_align_99_pfiltered.fasta"
++fi;
+ # RAxML info file generated when creating the reference RAxML tree
+-rxi="$DIR/ref/RAxML_info-reference-gg-raxml-bl.info"
++rxi="/opt/anaconda1anaconda2anaconda3/share/seppgg/RAxML_info-reference-gg-raxml-bl.info"
+ 
+ set -e
+ 
+-python $DIR/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
++python /opt/anaconda1anaconda2anaconda3/share/seppgg/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
+ 
+ tail sepp-$name-*
+ 
+@@ -97,13 +136,11 @@
+ cp $tmp/${name}_placement.json .
+ cp $tmp/${name}_rename-json.py .
+ 
+-gbin=$( dirname `grep -A1 "pplacer" $DIR/sepp/.sepp/main.config |grep path|sed -e "s/^path=//g"` )
+-
+-$gbin/guppy tog ${name}_placement.json
++/opt/anaconda1anaconda2anaconda3/bin/guppy tog ${name}_placement.json
+ 
+ cat ${name}_placement.tog.tre | python ${name}_rename-json.py > ${name}_placement.tog.relabelled.tre
+ 
+-$gbin/guppy tog --xml ${name}_placement.json
++/opt/anaconda1anaconda2anaconda3/bin/guppy tog --xml ${name}_placement.json
+ 
+ cat ${name}_placement.tog.xml | python ${name}_rename-json.py > ${name}_placement.tog.relabelled.xml
+ 
