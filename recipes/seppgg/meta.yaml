@@ -1,6 +1,6 @@
 package:
   name: seppgg
-  version: "0.1"
+  version: "0.2"
 
 source:
   - url: https://raw.github.com/smirarab/sepp-refs/master/gg/sepp-package.tar.bz
@@ -47,10 +47,10 @@ build:
 
 requirements:
   run:
-    - python >=3
+    - python >=3.5
     - biom-format
   build:
-    - python >=3
+    - python >=3.5
     - biom-format
 
 test:
