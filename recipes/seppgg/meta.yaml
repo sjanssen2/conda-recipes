@@ -40,6 +40,7 @@ build:
     - install ../tiny_fragments.mfa $PREFIX/share/seppgg/
     - install ../tiny_reference.aln $PREFIX/share/seppgg/
     - install ../tiny_reference.newick $PREFIX/share/seppgg/
+    - install ../example.biom $PREFIX/share/seppgg/
     - cp -r sepp $PREFIX/share/seppgg/
     # ensure config can be found
     - echo '/opt/anaconda1anaconda2anaconda3/share/seppgg/sepp/.sepp' > $PREFIX/share/seppgg/sepp/home.path
@@ -65,7 +66,7 @@ test:
     - bash $PREFIX/bin/seppgg $PREFIX/share/seppgg/tiny_fragments.mfa t1 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1
     - diff expected_result.tre t1_placement.tog.relabelled.tre
     # testing biom file as input
-    - bash $PREFIX/bin/seppgg $PREFIX/share/seppgg/example.biom t2 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1
+    - bash $PREFIX/bin/seppgg $PREFIX/share/seppgg/example.biom t2 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1 -b
     - diff expected_biom_result.tre t2_placement.tog.relabelled.tre
 
 about:
