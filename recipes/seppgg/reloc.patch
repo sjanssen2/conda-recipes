@@ -1,6 +1,6 @@
 --- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
-+++ run-sepp.sh.stefan	2017-09-22 11:21:44.349715875 -0700
-@@ -1,13 +1,40 @@
++++ run-sepp.sh.stefan	2017-09-22 11:50:09.622534127 -0700
+@@ -1,13 +1,48 @@
  #!/bin/bash  
  
  if [ $# -lt 2 ]; then
@@ -16,8 +16,14 @@
 +  inserted into the reference phylogeny.
 +output prefix:
 +  an arbitrary name that identifies this run.
-+	
++
 +Optional arguments:
++  -b
++    Use a biom table file as input, instead of a fasta file.
++    If -b is given, the input file is expected to be a biom
++    table which has Deblur fragment sequences as feature names.
++    Those feature names will be extracted and used for the
++    tree insertion.
 +  -x
 +    Number of CPU cores to be used.
 +  -A
@@ -39,13 +45,15 @@
  
 +if [[ `uname -o` != *"linux"* ]]; then
 +	echo "INFO: SEPP uses a lot of memory when merging found placements into a tree. 
-+Consider running SEPP in a grid environment instead of your local laptop!"
++Consider running SEPP in a grid environment instead of your local laptop!
++Try this command:
++echo 'seppgg input.fasta fancyname -x 8' | qsub -d $PWD -V -l walltime=12:00:00,nodes=1:ppn=8,pmem=8gb -N seppgg.fancyname"
 +fi;
 +
  tmpbase=`mktemp -d -t 'tmp.XXXXXXXXXX'`
  if [ $? -ne 0 ]; 
  then
-@@ -68,6 +95,14 @@
+@@ -68,6 +103,18 @@
  			p="$2"
  			shift # past argument
  			;;
@@ -57,10 +65,14 @@
 +			alg="$2"
 +			shift # past argument
 +			;;
++		-b|--biomInput)
++			isBiom="$2"
++			shift # past argument
++			;;
  		*)
  			opts="$opts"" ""$key"" ""$2"
  			shift # past argument
-@@ -79,16 +114,20 @@
+@@ -79,16 +126,30 @@
  
  DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
  
@@ -83,11 +95,21 @@
  set -e
  
 -python $DIR/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
++if [ ! -z $isBiom ]; then
++	echo "INFO: extracting fragments from BIOM table."
++	fragments=`biom summarize-table --observations -i $f | tail -n+16 | cut -d ":" -f 1 | tr [A-Z] [a-z] | sort -u`;
++	$f = $f.fragments
++	for frg in $fragments; do
++		echo ">$frg" >> $f;
++		echo "$frg" >> $f;
++	done;
++fi;
++
 +python /opt/anaconda1anaconda2anaconda3/share/seppgg/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
  
  tail sepp-$name-*
  
-@@ -97,13 +136,11 @@
+@@ -97,14 +158,14 @@
  cp $tmp/${name}_placement.json .
  cp $tmp/${name}_rename-json.py .
  
@@ -103,3 +125,6 @@
  
  cat ${name}_placement.tog.xml | python ${name}_rename-json.py > ${name}_placement.tog.relabelled.xml
  
+ echo output files are at ${name}_placement.* and more files are at $tmp . Consider removing $tmp if its files are not needed. 
++
++echo "INFO: run was successful. You are most likely only interested in the file ${name}_placement.relabelled.tre."

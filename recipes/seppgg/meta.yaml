@@ -6,15 +6,41 @@ source:
   - url: https://raw.github.com/smirarab/sepp-refs/master/gg/sepp-package.tar.bz
     md5: 7d5f181a01862aba5108b12e916871f6
   - path: ./reloc.patch
-  - path: ./expected_result.tre
   - path: ./tiny_fragments.mfa
   - path: ./tiny_reference.aln
   - path: ./tiny_reference.newick
 
 build:
   number: 1
-  #~ binary_has_prefix_files:
-    #~ - share/seppgg/main.config
+  script:
+    # unpack archive
+    - tar xjf sepp-package.tar.bz
+    - cd sepp-package
+    # patch main script to make it relocatable
+    - patch run-sepp.sh < ../reloc.patch
+    - mv run-sepp.sh seppgg
+    # run sepp configuration
+    - cd sepp
+    - python setup.py config -c
+    - sed -i 's|path=.*/|path=/opt/anaconda1anaconda2anaconda3/bin/|' .sepp/main.config
+    # install files into correct directories
+    - cd ../
+    - install -d $PREFIX/bin
+    - install seppgg $PREFIX/bin/
+    # arch and OS dependent choice of bundled binaries
+    - tools="guppy hmmalign hmmbuild hmmsearch pplacer"
+    - for tool in $tools; do install sepp/tools/bundled/Linux/$tool-$ARCH $PREFIX/bin/$tool; done  # [linux64 or linux32]
+    - for tool in $tools; do install sepp/tools/bundled/Darwin/$tool $PREFIX/bin/$tool; done       # [osx]
+    # install further files and tools
+    - install sepp/tools/merge/seppJsonMerger.jar $PREFIX/bin/seppJsonMerger.jar
+    - install -d $PREFIX/share/seppgg
+    - install ref/* $PREFIX/share/seppgg/
+    - install ../tiny_fragments.mfa $PREFIX/share/seppgg/
+    - install ../tiny_reference.aln $PREFIX/share/seppgg/
+    - install ../tiny_reference.newick $PREFIX/share/seppgg/
+    - cp -r sepp $PREFIX/share/seppgg/
+    # ensure config can be found
+    - echo '/opt/anaconda1anaconda2anaconda3/share/seppgg/sepp/.sepp' > $PREFIX/share/seppgg/sepp/home.path
 
 requirements:
   run:
@@ -26,10 +52,14 @@ requirements:
 
 test:
   files:
+    - ./expected_result.tre
   commands:
     - pwd
-    - seppgg $PREFIX/share/seppgg/tiny_fragments.mfa t1 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1
-    #~ - diff expected_result.tre t1_placement.tog.relabelled.tre
+    - env
+    - uname -a
+    - file $PREFIX/bin/hmmbuild
+    - bash $PREFIX/bin/seppgg $PREFIX/share/seppgg/tiny_fragments.mfa t1 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1
+    - diff expected_result.tre t1_placement.tog.relabelled.tre
 
 about:
   summary: Insert Deblur fragments into GreenGenes phylogeny.
