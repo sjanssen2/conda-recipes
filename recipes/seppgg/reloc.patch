@@ -1,5 +1,5 @@
 --- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
-+++ run-sepp.sh.stefan	2017-09-22 12:21:27.799150737 -0700
++++ run-sepp.sh.stefan	2017-09-22 15:16:11.430551531 -0700
 @@ -1,13 +1,48 @@
  #!/bin/bash  
  
@@ -43,7 +43,7 @@
     exit 1;
  fi
  
-+if [[ `uname -o` != *"Linux"* ]]; then
++if [[ `uname -s` == *"Darwin"* ]]; then
 +	echo "INFO: SEPP uses a lot of memory when merging found placements into a tree. 
 +Consider running SEPP in a grid environment instead of your local laptop!
 +Next time, try this command:
