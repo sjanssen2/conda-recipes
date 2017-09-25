@@ -1,6 +1,6 @@
 package:
   name: seppgg
-  version: "0.4"
+  version: "0.5"
 
 source:
   - url: https://raw.github.com/smirarab/sepp-refs/master/gg/sepp-package.tar.bz
