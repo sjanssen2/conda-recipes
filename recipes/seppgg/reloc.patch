@@ -1,5 +1,5 @@
 --- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
-+++ run-sepp.sh.stefan	2017-09-25 14:47:45.115226196 -0700
++++ run-sepp.sh.stefan	2017-09-25 15:27:46.723558612 -0700
 @@ -1,13 +1,45 @@
  #!/bin/bash  
  
@@ -50,7 +50,25 @@
  tmpbase=`mktemp -d -t 'tmp.XXXXXXXXXX'`
  if [ $? -ne 0 ]; 
  then
-@@ -68,6 +100,14 @@
+@@ -49,13 +81,16 @@
+ name=$1
+ shift
+ 
++# input type, default is a biom table
++inputtype='biom' 
++
+ # SEPP placement and alignment subset sizes
+ p=5000
+ a=1000
+ 
+ opts=""
+ 
+-while [[ $# -gt 1 ]]
++while [[ $# -gt 0 ]]
+ do
+ 	key="$1"
+ 
+@@ -68,6 +103,18 @@
  			p="$2"
  			shift # past argument
  			;;
@@ -62,10 +80,14 @@
 +			alg="$2"
 +			shift # past argument
 +			;;
++		-f|--fastaInput)
++			inputtype="fasta"
++			#~ shift
++			;;
  		*)
  			opts="$opts"" ""$key"" ""$2"
  			shift # past argument
-@@ -79,32 +119,50 @@
+@@ -79,32 +126,50 @@
  
  DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
  
@@ -88,7 +110,7 @@
  set -e
  
 -python $DIR/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
-+if [[ $@ == "-f"* ]]; then
++if [[ $inputtype == 'fasta' ]]; then
 +	echo "INFO: using fasta input file.";
 +else
 +	echo "INFO: extracting fragments from BIOM table."
