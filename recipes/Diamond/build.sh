@@ -10,8 +10,7 @@ case "$(uname)" in
         cd src
         ./install-boost &> /dev/null
         #sed -i "" "s/-march=native/ /g" Makefile
-		patch Makefile < ../boost.patch
-        make CXXFLAGS="-O3 -DNDEBUG -Iboost/include $(WARN) -I$PREFIX/include/" LDFLAGS="-L$PREFIX/lib/"
+        make
         mkdir -p $PREFIX/bin
         cp ../bin/diamond $PREFIX/bin
         ;;
