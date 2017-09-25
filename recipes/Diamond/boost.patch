@@ -1,0 +1,10 @@
+--- Makefile	2017-09-25 13:49:15.877274538 -0700
++++ Makefile.stefan	2017-09-25 13:49:08.600666399 -0700
+@@ -46,6 +46,6 @@
+ 	$(C) $(CFLAGS) -c -o $@ $<
+ 
+ diamond : $(OBJS)
+-	$(CXX) -o ../bin/$@ $(OBJS) $(LIBS)
++	$(CXX) -o ../bin/$@ $(OBJS) $(LIBS) -I $(PREFIX)/include/ -L$(PREFIX)/lib/
+ 
+ all : diamond
