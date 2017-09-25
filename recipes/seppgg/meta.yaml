@@ -66,7 +66,7 @@ test:
     - uname -a
     - file $PREFIX/bin/hmmbuild
     # testing fasta file as input
-    - bash $PREFIX/bin/seppgg -f $PREFIX/share/seppgg/tiny_fragments.mfa t1 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1
+    - bash $PREFIX/bin/seppgg $PREFIX/share/seppgg/tiny_fragments.mfa t1 -t $PREFIX/share/seppgg/tiny_reference.newick -a $PREFIX/share/seppgg/tiny_reference.aln -x 1 -f
     - diff expected_result.tre_linux t1_placement.tog.relabelled.tre          # [linux64 or linux32]
     - diff expected_result.tre_osx t1_placement.tog.relabelled.tre            # [osx]
     # testing biom file as input
