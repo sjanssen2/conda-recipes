@@ -1,5 +1,5 @@
 --- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
-+++ run-sepp.sh.stefan	2017-09-22 15:41:52.527209566 -0700
++++ run-sepp.sh.stefan	2017-09-25 12:38:21.974216114 -0700
 @@ -1,13 +1,48 @@
  #!/bin/bash  
  
@@ -103,7 +103,7 @@
 +	f=$filenameFragments
 +fi;
 +
-+python /opt/anaconda1anaconda2anaconda3/share/seppgg/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>$name-sepp-out.log 2>$name-sepp-err.log
++python /opt/anaconda1anaconda2anaconda3/share/seppgg/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>$name-sepp-out.log 2>$name-sepp-status.log
  
 -tail sepp-$name-*
 +tail $name-sepp-*
