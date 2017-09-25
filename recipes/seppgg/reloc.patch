@@ -1,6 +1,6 @@
 --- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
-+++ run-sepp.sh.stefan	2017-09-25 12:38:21.974216114 -0700
-@@ -1,13 +1,48 @@
++++ run-sepp.sh.stefan	2017-09-25 14:47:45.115226196 -0700
+@@ -1,13 +1,45 @@
  #!/bin/bash  
  
  if [ $# -lt 2 ]; then
@@ -9,21 +9,20 @@
 -   -x 8
 -   to make SEPP us 8 threads"
 +	echo "This is SEPP for GreenGenes 13.8
-+USAGE: $0 [input fragments file] [output prefix] <options>
++USAGE: $0 [deblur otu table] [output prefix] <options>
 +
 +input fragments file:
-+  a fasta file (one line per sequence) of the fragments to be
-+  inserted into the reference phylogeny.
++  An deblur OTU table in biom format. Its features (V4 
++  amplicon sequences) will be used as fragments.
 +output prefix:
 +  an arbitrary name that identifies this run.
 +
 +Optional arguments:
-+  -b
-+    Use a biom table file as input, instead of a fasta file.
-+    If -b is given, the input file is expected to be a biom
-+    table which has Deblur fragment sequences as feature names.
-+    Those feature names will be extracted and used for the
-+    tree insertion.
++  -f
++    If the flag -f is raised, the input is expected to be a
++    fasta file (one line per sequence) of the fragments to be
++    inserted into the reference phylogeny instead of providing
++    an OTU table in biom format.
 +  -x
 +    Number of CPU cores to be used.
 +  -A
@@ -43,17 +42,15 @@
     exit 1;
  fi
  
-+if [[ `uname -s` == *"Darwin"* ]]; then
-+	echo "INFO: SEPP uses a lot of memory when merging found placements into a tree. 
++echo "INFO: SEPP uses a lot of memory when merging found placements into a tree.
 +Consider running SEPP in a grid environment instead of your local laptop!
 +Next time, try this command:
 +echo 'seppgg $1 $2 -x 8' | qsub -d $PWD -V -l walltime=12:00:00,nodes=1:ppn=8,pmem=8gb -N seppgg.$2"
-+fi;
 +
  tmpbase=`mktemp -d -t 'tmp.XXXXXXXXXX'`
  if [ $? -ne 0 ]; 
  then
-@@ -68,6 +103,14 @@
+@@ -68,6 +100,14 @@
  			p="$2"
  			shift # past argument
  			;;
@@ -68,7 +65,7 @@
  		*)
  			opts="$opts"" ""$key"" ""$2"
  			shift # past argument
-@@ -79,32 +122,48 @@
+@@ -79,32 +119,50 @@
  
  DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
  
@@ -91,7 +88,9 @@
  set -e
  
 -python $DIR/sepp/run_sepp.py -P $p -A $a -t $t -a $alg -r $rxi -f $f -cp $tmpssd/chpoint-$name -o $name $opts -d $tmp/ -p $tmpssd 1>sepp-$name-out.log 2>sepp-$name-err.log
-+if [[ $@ == "-b"* ]]; then
++if [[ $@ == "-f"* ]]; then
++	echo "INFO: using fasta input file.";
++else
 +	echo "INFO: extracting fragments from BIOM table."
 +	filenameFragments=`basename $f`.fragments;
 +	fragments=`biom summarize-table --observations -i $f | tail -n+16 | cut -d ":" -f 1 | tr [A-Z] [a-z] | sort -u`;
