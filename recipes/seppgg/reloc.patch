@@ -1,5 +1,5 @@
 --- run-sepp.sh	2017-07-05 17:30:56.000000000 -0700
-+++ run-sepp.sh.stefan	2017-09-25 15:27:46.723558612 -0700
++++ run-sepp.sh.stefan	2017-09-26 15:51:11.940560944 -0700
 @@ -1,13 +1,45 @@
  #!/bin/bash  
  
@@ -115,7 +115,7 @@
 +else
 +	echo "INFO: extracting fragments from BIOM table."
 +	filenameFragments=`basename $f`.fragments;
-+	fragments=`biom summarize-table --observations -i $f | tail -n+16 | cut -d ":" -f 1 | tr [A-Z] [a-z] | sort -u`;
++	fragments=`biom summarize-table --observations -i $f | tail -n+16 | cut -d ":" -f 1 | sort -u`;
 +	touch $filenameFragments;
 +	for frg in $fragments; do
 +		echo ">$frg" >> $filenameFragments;
