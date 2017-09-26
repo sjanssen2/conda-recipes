@@ -1,6 +1,6 @@
 package:
   name: seppgg
-  version: "0.5"
+  version: "0.6"
 
 source:
   - url: https://raw.github.com/smirarab/sepp-refs/master/gg/sepp-package.tar.bz
@@ -49,17 +49,17 @@ requirements:
   run:
     - python ==3.5
     - biom-format
-    - java-jdk
+    - java-jdk         # [osx]
   build:
     - python ==3.5
     - biom-format
 
 test:
   files:
-    - ./expected_result.tre_linux                                             # [linux64 or linux32]
-    - ./expected_biom_result.tre_linux                                        # [linux64 or linux32]
-    - ./expected_result.tre_osx                                               # [osx]
-    - ./expected_biom_result.tre_osx                                          # [osx]
+    - ./expected_result.tre_linux       # [linux64 or linux32]
+    - ./expected_biom_result.tre_linux  # [linux64 or linux32]
+    - ./expected_result.tre_osx         # [osx]
+    - ./expected_biom_result.tre_osx    # [osx]
   commands:
     - pwd
     - env
