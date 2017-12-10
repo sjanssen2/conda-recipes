@@ -7,6 +7,7 @@ source:
   - git_rev: 4.3.4b
   - md5: 0eb27cf575689635c779c07ac3156cc3
   - path: onlyplacements.patch
+  - path: reloc.patch
 
 build:
   number: 0
@@ -15,6 +16,8 @@ build:
     - cd gg && tar xjvf sepp-package.tar.bz    
     # patch sepp wrapper such that it becomes possible to stop execution after placements have been computed, i.e. skip guppy
     - patch sepp-package/run-sepp.sh < ../onlyplacements.patch
+    # change DIR in SEPP wrapper to be relocatable
+    - patch sepp-package/run-sepp.sh < ../reloc.patch
     # move SEPP to PREFIX
     - mkdir -p $PREFIX/share/
     - mv sepp-package $PREFIX/share/fragment-insertion
@@ -23,8 +26,6 @@ build:
     # move SEPP binary into PREFIX/bin and update reference location
     - mkdir -p $PREFIX/bin/
     - mv ../run-sepp.sh $PREFIX/bin
-    - sed -i 's|^DIR=.*$|DIR=/opt/anaconda1anaconda2anaconda3/share/fragment-insertion/|' $PREFIX/bin/run-sepp.sh   # [linux64 or linux32]
-    - gsed -i 's|^DIR=.*$|DIR=/opt/anaconda1anaconda2anaconda3/share/fragment-insertion/|' $PREFIX/bin/run-sepp.sh   # [osx]
 
 requirements:
   build:
@@ -46,9 +47,6 @@ test:
     - run-sepp.sh input_fragments.fasta testrun_tiny -a reference_alignment_tiny.fasta -t reference_phylogeny_tiny.nwk -x 1
     - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
     - grep "testseqd" testrun_tiny_placement.tog.relabelled.tre
-    # test with default Greengenes 13.8 reference
-    - run-sepp.sh input_fragments.fasta testrun_default
-    - grep "testseqd" testrun_default_placement.tog.relabelled.tre
 
 about:
   summary: Insert Deblur fragments into GreenGenes phylogeny.
