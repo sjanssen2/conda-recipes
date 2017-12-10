@@ -1,12 +1,10 @@
-{% set version = '4.3.4b' %}
-
 package:
   name: fragment-insertion
-  version: {{ version }}
+  version: "4.3.4b"
 
 source:
   - git_url: https://github.com/smirarab/sepp-refs.git
-  - git_rev: {{ version }}
+  - git_rev: 4.3.4b
   - md5: 0eb27cf575689635c779c07ac3156cc3
   - path: onlyplacements.patch
 
