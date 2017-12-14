@@ -1,6 +1,6 @@
 package:
   name: fragment-insertion
-  version: "4.3.4b"
+  version: "4.3.4c"
 
 source:
   - git_url: https://github.com/smirarab/sepp-refs.git
@@ -10,7 +10,7 @@ source:
   - path: reloc.patch
 
 build:
-  number: 1
+  number: 0
   script:
     # unpack SEPP package
     - cd gg && tar xjvf sepp-package.tar.bz    
