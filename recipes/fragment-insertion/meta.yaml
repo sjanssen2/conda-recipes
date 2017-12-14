@@ -1,6 +1,6 @@
 package:
   name: fragment-insertion
-  version: "4.3.4c"
+  version: "4.3.4b"
 
 source:
   - git_url: https://github.com/smirarab/sepp-refs.git
