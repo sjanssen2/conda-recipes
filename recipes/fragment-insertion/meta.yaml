@@ -27,8 +27,7 @@ build:
     - mkdir -p $PREFIX/bin/
     - mv ../run-sepp.sh $PREFIX/bin
     # copy bundled binaries into $PREFIX/bin/ to 
-    - dir_bundled=dirname `cat $CONDA_PREFIX/share/fragment-insertion/sepp/.sepp/main.config | grep "^path" -m 1 | cut -d "=" -f 2`
-    - cp $dir_bundled/* $PREFIX/bin/
+    - dir_bundled=dirname `cat $CONDA_PREFIX/share/fragment-insertion/sepp/.sepp/main.config | grep "^path" -m 1 | cut -d "=" -f 2`; cp $dir_bundled/* $PREFIX/bin/
 
 requirements:
   build:
