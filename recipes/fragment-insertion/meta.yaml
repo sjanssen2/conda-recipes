@@ -10,7 +10,7 @@ source:
   - path: reloc.patch
 
 build:
-  number: 0
+  number: 1
   script:
     # unpack SEPP package
     - cd gg && tar xjvf sepp-package.tar.bz    
